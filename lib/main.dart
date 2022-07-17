@@ -42,6 +42,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   List<String> wordList = [];
   List<String> filteredWordList = [];
+  String textFiledValue = '';
 
   void _loadWords() async {
     String tempData =
@@ -57,6 +58,8 @@ class _MyHomePageState extends State<MyHomePage> {
   void _onSearch(value){
     setState(() {
       filteredWordList = wordList.where((item) => item.contains("$value")).toList();
+
+      textFiledValue = value;
       
     });
     
@@ -71,18 +74,50 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(appBar: AppBar(title: Text("Searches In Flutter")),
+    return Scaffold(appBar: AppBar(title: Text("High Light search")),
     body: Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          TextField(decoration: new InputDecoration(
+          TextField(decoration: const InputDecoration(
             hintText: "Search Here .."
           ),
           onChanged: _onSearch,),
           Expanded(child: ListView.builder(itemCount: filteredWordList.length,
+          // filteredWordList[index]
           itemBuilder:(context , index ){
-            return Card(child: ListTile(title: Text("${filteredWordList[index]}"),),);
+            List<TextSpan>  textSpanList = [];
+            String word = filteredWordList[index];
+            List<String> tempList = word.length > 1 && word.indexOf(textFiledValue) != -1 ? word.split(textFiledValue) : [word , ''];  
+            
+            int i = 0;
+                  tempList.forEach((item) {
+                    if (word.indexOf(textFiledValue) != -1 &&
+                        i < tempList.length - 1) {
+                      //
+                      textSpanList = [
+                        ...textSpanList,
+                        TextSpan(text: '${item}'),
+                        TextSpan(
+                          text: textFiledValue,
+                          style: TextStyle(
+                              
+                              background: Paint()..color = Colors.yellow),
+                        ),
+                      ];
+                    } else {
+                      //
+                      textSpanList = [
+                        ...textSpanList,
+                        TextSpan(text: item)
+                      ];
+                    }
+                    i++;
+                  });
+            return Card( child: Padding(padding: EdgeInsets.all(10),
+            child: RichText(text: TextSpan(style: DefaultTextStyle.of(context).style,
+             children:textSpanList ),),),
+            );
           },)),
         ],
       ),
