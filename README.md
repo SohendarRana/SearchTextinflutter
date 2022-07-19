@@ -1,4 +1,4 @@
-# mlkit_barcodescanner_test
+# HighLighted Search Text in Flutter 
 
 A new Flutter project.
 
